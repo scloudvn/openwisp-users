@@ -1471,10 +1471,10 @@ class TestUsersAdmin(TestOrganizationMixin, TestUserAdditionalFieldsMixin, TestC
         ]
         response = self.client.get(reverse('admin:index'))
         for model in models:
-            with self.subTest(f'test_admin_group_for_{model}_model'):
+            with self.subTest(f'test menu group link for {model} model'):
                 url = reverse(f'admin:{self.app_label}_{model}_changelist')
-                self.assertContains(response, f'<a class="mg-link" href="{url}">')
-        with self.subTest('test_user_and_organization_group_is_registered'):
+                self.assertContains(response, f'class="mg-link" href="{url}"')
+        with self.subTest('test user and organization group is registered'):
             self.assertContains(
                 response,
                 '<div class="mg-dropdown-label">Users & Organizations </div>',
@@ -1728,16 +1728,16 @@ class TestMultitenantAdmin(TestMultitenantAdminMixin, TestOrganizationMixin, Tes
             self.client.force_login(user)
             response = self.client.get(url)
             for org in Organization.objects.all():
-                self.assertContains(response, f'<a href="?organization={org.pk}"')
+                self.assertContains(response, f'href="?organization={org.pk}">')
 
         with self.subTest('test non superadmin'):
             user = User.objects.get(username='operator')
             self.client.force_login(user)
             response = self.client.get(url)
             for pk in user.organizations_managed:
-                self.assertContains(response, f'<a href="?organization={pk}"')
+                self.assertContains(response, f'href="?organization={pk}">')
             for org in Organization.objects.exclude(pk__in=user.organizations_managed):
-                self.assertNotContains(response, f'<a href="?organization={org.pk}"')
+                self.assertNotContains(response, f'href="?organization={org.pk}">')
 
         with self.subTest('test only 1 org'):
             OrganizationUser.objects.filter(
@@ -1747,4 +1747,4 @@ class TestMultitenantAdmin(TestMultitenantAdminMixin, TestOrganizationMixin, Tes
             self.assertEqual(len(user.organizations_managed), 1)
             response = self.client.get(url)
             for pk in user.organizations_managed:
-                self.assertNotContains(response, f'<a href="?organization={pk}"')
+                self.assertNotContains(response, f'href="?organization={pk}">')
